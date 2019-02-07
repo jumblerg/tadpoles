@@ -40,7 +40,7 @@
       (let [hdrs (assoc headers "Cookie" cookie)
             from (- to 2629800)
             prms {"earliest_event_time" (str from) "latest_event_time" to "direction" "range" "num_events" "300" "client" "dashboard"}
-            resp (http/get (str url "events") {:client sni-client :headers hdrs  :query-params prms})
+            resp (http/get (str url "events") {:client client :headers hdrs  :query-params prms})
             evts (-> resp deref :body (json/parse-string true) :events)]
        (println "Downloading" (count evts) "events between" from "and" to)
        (when (and evts (> (count evts) 0))
@@ -50,7 +50,7 @@
                    ppl  (string/replace (string/join "-" (map string/lower-case members_display)) #" " "-") 
                    ext  (second (string/split mime_type #"/"))
                    name (str (trunc (str event_date "_" evt-idx atc-idx "_" ppl) 200) "." ext)
-                   resp (http/get (str url "attachment") {:client sni-client :headers hdrs :query-params {"key" key}})]
+                   resp (http/get (str url "attachment") {:client client :headers hdrs :query-params {"key" key}})]
               (println "Downloading object" name)
               (with-open [src (-> resp deref :body)
                               tgt (io/output-stream (io/file path name))]
