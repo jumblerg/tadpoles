@@ -27,20 +27,19 @@
    "Accept-Language"  "en-US,en;q=0.5"
    "Accept-Encoding"  "gzip, deflate, br"
    "Referer"          "https://www.tadpoles.com/parents"
-   "X-TADPOLES-UID"   "mgrunwald@audact.com"
    "X-Requested-With" "XMLHttpRequest"
    "DNT"              "1"
    "TE"               "Trailers"})
 
 ;;; doit ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn download-session-media! [path cookie & [{:keys [to]}]]
+(defn download-session-media! [path cookie to]
   (let [client (http/make-client {:ssl-configurer sni-configure})]
-    (loop [to (or to 1538366400)]
-      (let [hdrs (assoc headers "Cookie" cookie)
+    (loop [to to]
+      ( let [hdrs (assoc headers "Cookie" cookie)
             from (- to 2629800)
-            prms {"earliest_event_time" (str from) "latest_event_time" to "direction" "range" "num_events" "300" "client" "dashboard"}
-            resp (http/get (str url "events") {:client client :headers hdrs  :query-params prms})
+            prms {"earliest_event_time" (str from) "latest_event_time" to "direction" "range" "num_events" "300"}
+            resp (http/get (str url "events") {:client client :headers hdrs :query-params prms})
             evts (-> resp deref :body (json/parse-string true) :events)]
        (println "Downloading" (count evts) "events between" from "and" to)
        (when (and evts (> (count evts) 0))

@@ -19,5 +19,5 @@ associated with the account corresponding to the cookie.
 => (require 'tadpoles :reload-all)
 => (in-ns 'tadpoles)
 => (def cookie "...")
-=> (download-session-media! "media" cookie)
+=> (download-session-media! "media" cookie time)
 ```
